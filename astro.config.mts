@@ -143,7 +143,7 @@ export default defineConfig({
             },
           ],
           footerText:
-            "Built by [Web Dev Simplified](https://webdevsimplified.com) for use with [Shadcn](https://ui.shadcn.com)",
+            "Built by [Megz](https://gateling.com) for use with [Shadcn](https://ui.shadcn.com)",
         }),
       ],
     }),

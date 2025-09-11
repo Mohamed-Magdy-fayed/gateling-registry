@@ -47,7 +47,7 @@ You can fork this repo by clicking the fork button in the top right corner of th
 ### Clone on your local machine
 
 ```bash
-git clone git@github.com:WebDevSimplified/wds-shadcn-registry.git
+git clone git@github.com:Mohamed-Magdy-fayed/megz-registry.git
 ```
 
 ### Navigate to project directory

@@ -2,7 +2,7 @@
 import { CliCommandCodeInternal } from "./_cli-command-code-internal"
 
 type Action = "install" | "run"
-const packageManagers = ["pnpm", "npm", "yarn", "bun"] as const
+const packageManagers = ["npm", "pnpm", "yarn", "bun"] as const
 type PackageManager = (typeof packageManagers)[number]
 
 const ACTION_PACKAGE_MANAGER_MAP: Record<
@@ -10,14 +10,14 @@ const ACTION_PACKAGE_MANAGER_MAP: Record<
   Record<PackageManager, string>
 > = {
   install: {
-    pnpm: `pnpm add`,
     npm: `npm install`,
+    pnpm: `pnpm add`,
     yarn: `yarn add`,
     bun: `bun add`,
   },
   run: {
-    pnpm: `pnpm dlx`,
     npm: `npx`,
+    pnpm: `pnpm dlx`,
     yarn: `yarn`,
     bun: `bunx --bun`,
   },
