@@ -1,0 +1,73 @@
+---
+import { localizedUrl } from "node_modules/@astrojs/starlight/utils/localizedUrl"
+import context from "virtual:starlight/project-context"
+import config from "virtual:starlight/user-config"
+
+const currentLocale = Astro.locals.starlightRoute.locale
+const targetLocale = currentLocale === "ar" ? "root" : "ar"
+
+const targetURL = localizedUrl(Astro.url, targetLocale, context.trailingSlash)
+
+const label =
+    Astro.locals.t("languageSelect.accessibleLabel") || "Switch language"
+---
+
+{
+    config.isMultilingual && (
+        <starlight-lang-toggle-button data-path={targetURL.pathname}>
+            <button
+                class="sl-flex button"
+                type="button"
+                title={label}
+                aria-label={label}
+                data-variant="ghost"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="2" y1="12" x2="22" y2="12" />
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
+                <span class="sr-only">{label}</span>
+            </button>
+        </starlight-lang-toggle-button>
+    )
+}
+
+<style>
+    svg {
+        width: 1.25rem; /* 20px */
+        height: 1.25rem; /* 20px */
+    }
+</style>
+
+<script>
+    class StarlightLangToggleButton extends HTMLElement {
+        constructor() {
+            super()
+            const button = this.querySelector("button")
+            if (!button) return
+
+            const targetPath = this.dataset.path
+            if (!targetPath) return
+
+            button.addEventListener("click", () => {
+                // Navigate to the target URL on click
+                window.location.pathname = targetPath
+            })
+        }
+    }
+    customElements.define(
+        "starlight-lang-toggle-button",
+        StarlightLangToggleButton,
+    )
+</script>

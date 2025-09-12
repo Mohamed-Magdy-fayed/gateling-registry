@@ -9,6 +9,8 @@ import {
 type Props = { demo: Demo }
 
 const { demo } = Astro.props
+const dir = Astro.currentLocale === "ar" ? "rtl" : "ltr"
+
 const componentName = demo.split("/")[0] ?? ""
 const fileContents = (
   await fs.readFile(`./src/registry/new-york/examples/${demo}.tsx`, "utf-8")
@@ -21,8 +23,8 @@ const fileContents = (
 )
 ---
 
-<div>
-  <CodePreviewInternal demo={demo} client:load>
+<div dir={dir}>
+  <CodePreviewInternal demo={demo} dir={dir} client:load>
     <Code
       code={fileContents}
       lang="tsx"

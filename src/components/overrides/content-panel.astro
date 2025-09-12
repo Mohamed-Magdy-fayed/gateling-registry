@@ -1,0 +1,7 @@
+---
+const dir = Astro.currentLocale === "ar" ? "rtl" : "ltr"
+---
+
+<div dir={dir}>
+    <slot />
+</div>

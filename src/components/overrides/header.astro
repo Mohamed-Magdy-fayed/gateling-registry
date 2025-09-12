@@ -1,0 +1,18 @@
+---
+import Search from "@astrojs/starlight/components/Search.astro"
+import SocialIcons from "@astrojs/starlight/components/SocialIcons.astro"
+import SiteTitle from "@astrojs/starlight/components/SiteTitle.astro"
+import ThemeSelect from "starlight-theme-black/overrides/ThemeSelect.astro"
+import { CustomHeader } from "./_header"
+import LanguageSwitcher from "@/components/overrides/language-switcher.astro"
+
+const { ...props } = Astro.props
+---
+
+<SiteTitle {...props} />
+<CustomHeader>
+    <Search {...props} />
+    <SocialIcons {...props} />
+    <ThemeSelect {...props} />
+    <LanguageSwitcher {...props} />
+</CustomHeader>

@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { useLocalStorage } from "@/hooks/useLocalStorage"
+import { useLocalStorage } from "@/hooks/use-local-storage"
 import { CheckIcon, ClipboardIcon, TerminalIcon, XIcon } from "lucide-react"
 import { useState } from "react"
 
@@ -46,8 +46,8 @@ export function CliCommandCodeInternal({
           className="gap-0"
         >
           <div className="flex items-center border-b border-input px-3 py-1">
-            <div className="mr-2 flex size-4 items-center justify-center bg-foreground/70">
-              <TerminalIcon className="size-3 text-code" />
+            <div className="mr-2 flex size-4 items-center justify-center">
+              <TerminalIcon className="size-3" />
             </div>
             <TabsList className="font-mono">
               {commands.map((command, index) => (
@@ -65,7 +65,7 @@ export function CliCommandCodeInternal({
                 <Button
                   onClick={handleCopy}
                   variant="ghost"
-                  className="ml-auto size-8 text-muted-foreground"
+                  className="ml-auto size-8"
                 >
                   {copyState === "idle" ? (
                     <ClipboardIcon />
@@ -86,7 +86,7 @@ export function CliCommandCodeInternal({
               <TabsContent
                 key={command.label}
                 value={command.label}
-                className="no-scrollbar overflow-x-auto py-3.5 text-muted-foreground"
+                className="no-scrollbar overflow-x-auto py-3.5"
               >
                 <pre>
                   <code className="px-4">{command.code}</code>

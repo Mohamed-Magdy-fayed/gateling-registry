@@ -33,10 +33,14 @@ export default defineConfig({
       }),
     },
   },
+  i18n: { defaultLocale: "en", locales: ["en", "ar"], fallback: { ar: "en" } },
   integrations: [
     starlight({
       components: {
         Head: "./src/components/overrides/head.astro",
+        Header: "./src/components/overrides/header.astro",
+        ContentPanel: "./src/components/overrides/content-panel.astro",
+        Pagination: "./src/components/overrides/pagination.astro",
       },
       head: [
         // Add ICO favicon fallback for Safari.
@@ -68,7 +72,7 @@ export default defineConfig({
           },
         },
       ],
-      title: "WDS Shadcn Registry",
+      title: "Gateling Shadcn Registry",
       editLink: {
         baseUrl: `${GITHUB_REPO_URL}/tree/main`,
       },
@@ -128,22 +132,8 @@ export default defineConfig({
       ],
       plugins: [
         starlightThemeBlack({
-          navLinks: [
-            {
-              label: "Docs",
-              link: "/getting-started/installation",
-            },
-            {
-              label: "Components",
-              link: "/components",
-            },
-            {
-              label: "Contributing",
-              link: "/contributing",
-            },
-          ],
           footerText:
-            "Built by [Megz](https://gateling.com) for use with [Shadcn](https://ui.shadcn.com)",
+            "Built by [Gateling](https://gateling.com) for use with [Shadcn](https://ui.shadcn.com)",
         }),
       ],
     }),

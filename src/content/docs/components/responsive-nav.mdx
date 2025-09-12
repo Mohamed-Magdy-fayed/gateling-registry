@@ -1,0 +1,62 @@
+---
+title: Responsive Navigation
+description: A responsive navigation bar that automatically moves items to an overflow menu based on available space.
+---
+
+import CodePreview from "@/components/markdown/code-preview/code-preview.astro"
+import Installation from "@/components/markdown/installation-tabs/installation-tabs.astro"
+import ToastProvider from "@/components/markdown/toast-provider.astro"
+
+A flexible navigation system composed of a provider, a desktop container, and a mobile menu. The menu toggler can be placed anywhere within the provider.
+
+<CodePreview demo="responsive-nav/basic" />
+
+## Installation
+
+{/* We'll add two installation tabs, one for the main component and one for the toggler */}
+<Installation registryItem="responsive-nav" />
+
+## Usage
+
+```tsx
+import {
+  DesktopNav,
+  MobileNav,
+  ResponsiveMenuProvider,
+  type NavItem,
+} from "@/components/ui/responsive-nav"
+
+const navItems: NavItem[] = [
+    { label: "Home", variant: "link", href: "#" },
+    { label: "About", variant: "link", href: "#" },
+    { label: "Contact", variant: "link", href: "#" },
+]
+
+<div className="flex h-full items-start justify-center p-6">
+  <header className="flex w-full items-center justify-between gap-4 p-2 rounded-lg bg-card px-4 shadow">
+    <div className="font-bold text-lg">SimpleLogo</div>
+      <ResponsiveMenuProvider items={navItems}>
+          <div className="flex items-center justify-end gap-4">
+              <DesktopNav />
+              <MobileNav />
+          </div>
+      </ResponsiveMenuProvider>
+    </header>
+</div>
+```
+
+## Examples
+
+### Basic
+
+<CodePreview demo="responsive-nav/basic" />
+
+### Action Buttons
+
+<CodePreview demo="responsive-nav/action" />
+
+### Complex Nested Items
+
+<CodePreview demo="responsive-nav/complex" />
+
+<ToastProvider />

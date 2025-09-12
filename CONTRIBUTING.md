@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in contributing to WDS Shadcn Registry. We're happy to have you here.
+Thanks for your interest in contributing to Gateling Shadcn Registry. We're happy to have you here.
 
 Please take a moment to review this document before submitting your first pull request. We also strongly recommend that you check for open issues and pull requests to see if someone else is working on something similar.
 
@@ -47,13 +47,13 @@ You can fork this repo by clicking the fork button in the top right corner of th
 ### Clone on your local machine
 
 ```bash
-git clone git@github.com:Mohamed-Magdy-fayed/megz-registry.git
+git clone git@github.com:Mohamed-Magdy-fayed/gateling-registry.git
 ```
 
 ### Navigate to project directory
 
 ```bash
-cd wds-shadcn-registry
+cd Gateling-shadcn-registry
 ```
 
 ### Create a new Branch

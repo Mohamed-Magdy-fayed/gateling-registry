@@ -35,8 +35,8 @@ export type CssVars = {
 export type CssValue =
   | string
   | {
-      [property: string]: CssValue
-    }
+    [property: string]: CssValue
+  }
 
 export type RegistryItemSchema = {
   name: string
