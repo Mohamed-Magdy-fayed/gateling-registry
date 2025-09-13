@@ -8,9 +8,9 @@ import astro from "eslint-plugin-astro"
 import astroParser from "astro-eslint-parser"
 import prettier from "eslint-config-prettier"
 import reactHooks from "eslint-plugin-react-hooks"
-import { globalIgnores } from "eslint/config"
+import { defineConfig, globalIgnores } from "eslint/config"
 
-export default tseslint.config([
+export default defineConfig([
   globalIgnores([
     "node_modules/",
     ".astro/",

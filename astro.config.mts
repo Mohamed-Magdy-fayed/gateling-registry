@@ -140,11 +140,11 @@ export default defineConfig({
     react(),
   ],
   vite: {
-    plugins: [{ name: "tailwindcss", ...tailwindcss() }],
+    plugins: [tailwindcss()],
     ssr: {
       // FIXME: Once starlight supports Zod 4 we can probably remove this.
       // Zod should normally be imported from astro, but I want my code to use its own zod version to reflect the version used in the shadcn components.
-      noExternal: ["zod"],
+      noExternal: ["zod", "@tailwindcss/vite"],
     },
   },
 })

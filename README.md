@@ -4,7 +4,7 @@ A collection of accessible components built for use with Shadcn
 
 ## Documentation
 
-Visit https://Gateling-shadcn-registry.netlify.app to view the documentation.
+Visit https://gateling-registry.vercel.app/ to view the documentation.
 
 ## Contributing
 
