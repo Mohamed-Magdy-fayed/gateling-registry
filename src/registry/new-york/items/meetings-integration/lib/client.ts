@@ -14,7 +14,11 @@ export type MeetingsClientOptions = {
   /** `gm_live_…` from /settings/integrations. */
   apiKey: string
   fetch?: typeof fetch
+  /** Per-request timeout. A hung connection must not hold a job until the platform kills it. */
+  timeoutMs?: number
 }
+
+export const DEFAULT_TIMEOUT_MS = 10_000
 
 export type ExternalUser = {
   /** Your own stable id for the person (user id, staff id, …). */
@@ -135,6 +139,7 @@ export function createMeetingsClient({
   baseUrl,
   apiKey,
   fetch: fetchImpl = fetch,
+  timeoutMs = DEFAULT_TIMEOUT_MS,
 }: MeetingsClientOptions) {
   const base = baseUrl.replace(/\/+$/, "")
 
@@ -152,6 +157,7 @@ export function createMeetingsClient({
         ...extraHeaders,
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
+      signal: AbortSignal.timeout(timeoutMs),
     })
     if (response.status === 204) return undefined as T
     const json = (await response.json()) as
