@@ -19,9 +19,11 @@ export default defineConfig([
     "dist/",
     "public/r/",
     "package-lock.json",
+    // MDX is not Markdown: @eslint/markdown cannot parse the JSX/import blocks.
+    "**/*.mdx",
   ]),
   {
-    files: ["**/*.{md,mdx}"],
+    files: ["**/*.md"],
     plugins: { markdown },
     extends: [markdown.configs.recommended],
   },

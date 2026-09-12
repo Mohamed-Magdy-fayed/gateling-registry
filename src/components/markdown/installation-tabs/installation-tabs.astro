@@ -16,6 +16,7 @@ type RegistryItem =
   | "number-input"
   | "password-input"
   | "responsive-nav"
+  | "meetings-integration"
 
 type Props = { registryItem: RegistryItem }
 
@@ -25,11 +26,10 @@ const module = (await import(`../../../../public/r/${registryItem}.json`))
   .default as RegistryItemSchema
 
 const filesToCopy = module.files?.map(file => {
-  const pathFromType = getFileLocationFromType(file.type)
   return {
     path:
       file.target ??
-      `${pathFromType}/${registryItem}.${file.path.split(".").pop()}`,
+      `${getFileLocationFromType(file.type)}/${registryItem}.${file.path.split(".").pop()}`,
     // TODO: In what cases is content undefined?
     content: file.content ?? "",
   }

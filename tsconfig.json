@@ -1,7 +1,7 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"],
+  "exclude": ["dist", "src/registry/new-york/items/meetings-integration/app"],
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "react",

@@ -112,6 +112,10 @@ export default defineConfig({
           autogenerate: { directory: "components" },
         },
         {
+          label: "Integrations",
+          autogenerate: { directory: "integrations" },
+        },
+        {
           label: "Contributing",
           items: [
             { label: "Introduction", slug: "contributing" },
@@ -144,7 +148,7 @@ export default defineConfig({
     ssr: {
       // FIXME: Once starlight supports Zod 4 we can probably remove this.
       // Zod should normally be imported from astro, but I want my code to use its own zod version to reflect the version used in the shadcn components.
-      noExternal: ["zod", "@tailwindcss/vite"],
+      noExternal: ["zod"],
     },
   },
 })

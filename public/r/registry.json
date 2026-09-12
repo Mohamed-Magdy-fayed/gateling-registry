@@ -22,7 +22,7 @@
         "alert-dialog",
         "button",
         "sonner",
-        "https://gateling-registry.vercel.app//r/loading-swap.json"
+        "https://gateling-registry.vercel.app/r/loading-swap.json"
       ],
       "files": [
         {
@@ -81,6 +81,58 @@
         {
           "path": "src/registry/new-york/items/responsive-nav/components/responsive-nav.tsx",
           "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "meetings-integration",
+      "title": "Meetings Integration",
+      "description": "Server-side client, scheduling helpers and signed-webhook receiver for Gateling Meetings (meetings.gateling.com). Provision a video room for any entity that has a time.",
+      "type": "registry:block",
+      "categories": ["integrations"],
+      "dependencies": ["zod", "server-only"],
+      "devDependencies": ["vitest"],
+      "envVars": {
+        "MEETINGS_API_URL": "https://meetings.gateling.com",
+        "MEETINGS_API_KEY": "",
+        "MEETINGS_WEBHOOK_SECRET": ""
+      },
+      "docs": "Next steps:\n1. Create an integration at https://meetings.gateling.com/settings/integrations and paste MEETINGS_API_URL / MEETINGS_API_KEY / MEETINGS_WEBHOOK_SECRET into your environment (and your env validation, e.g. src/env/server.ts).\n2. Set the integration's Webhook URL to https://<your-app>/api/meetings-webhook and edit onDelivery in src/app/api/meetings-webhook/route.ts to hand deliveries to your job queue.\n3. Call ensureScheduledMeeting / cancelScheduledMeeting from a background job, never inline in a request. Docs: https://gateling-registry.vercel.app/integrations/meetings-integration",
+      "files": [
+        {
+          "path": "src/registry/new-york/items/meetings-integration/lib/client.ts",
+          "type": "registry:lib",
+          "target": "src/integrations/meetings/client.ts"
+        },
+        {
+          "path": "src/registry/new-york/items/meetings-integration/lib/index.ts",
+          "type": "registry:lib",
+          "target": "src/integrations/meetings/index.ts"
+        },
+        {
+          "path": "src/registry/new-york/items/meetings-integration/lib/scheduled-meeting.ts",
+          "type": "registry:lib",
+          "target": "src/integrations/meetings/scheduled-meeting.ts"
+        },
+        {
+          "path": "src/registry/new-york/items/meetings-integration/lib/webhook.ts",
+          "type": "registry:lib",
+          "target": "src/integrations/meetings/webhook.ts"
+        },
+        {
+          "path": "src/registry/new-york/items/meetings-integration/lib/scheduled-meeting.test.ts",
+          "type": "registry:file",
+          "target": "src/integrations/meetings/scheduled-meeting.test.ts"
+        },
+        {
+          "path": "src/registry/new-york/items/meetings-integration/lib/webhook.test.ts",
+          "type": "registry:file",
+          "target": "src/integrations/meetings/webhook.test.ts"
+        },
+        {
+          "path": "src/registry/new-york/items/meetings-integration/app/api/meetings-webhook/route.ts",
+          "type": "registry:file",
+          "target": "src/app/api/meetings-webhook/route.ts"
         }
       ]
     }

@@ -1,0 +1,167 @@
+---
+title: Meetings Integration
+description: Provision Gateling Meetings video rooms for anything in your app that has a time — bookings, lessons, fittings, demos — and let people in without a second login.
+---
+
+import Installation from "@/components/markdown/installation-tabs/installation-tabs.astro"
+import CliCommandCode from "@/components/markdown/cli-command-code/cli-command-code.astro"
+
+Gateling Meetings (`https://meetings.gateling.com`) is the video-room platform. It has
+**no calendar of its own** — your app owns availability and time slots; Meetings owns the
+room. This block is the consumer side of that contract, identical in every Gateling system:
+
+- `client.ts` — typed zero-dependency client for `/api/v1` (create, get, update, delete,
+  end, join links, participants).
+- `scheduled-meeting.ts` — `ensureScheduledMeeting` (create-or-reschedule, idempotent),
+  `cancelScheduledMeeting`, `mintHostJoinLink`, `mintParticipantJoinLink`.
+- `webhook.ts` — signature verification + a route-handler factory for Meetings' signed
+  lifecycle webhooks.
+- `app/api/meetings-webhook/route.ts` — the starter endpoint.
+- Vitest specs for the helpers, so your app keeps the coverage.
+
+## Installation
+
+Add the registry namespace once to your `components.json`:
+
+```json
+{
+  "registries": {
+    "@gateling": "https://gateling-registry.vercel.app/r/{name}.json"
+  }
+}
+```
+
+<CliCommandCode
+  action="run"
+  command="shadcn@latest add @gateling/meetings-integration"
+/>
+
+<Installation registryItem="meetings-integration" />
+
+### Environment
+
+Create the integration at `https://meetings.gateling.com/settings/integrations` (Name, Slug,
+Webhook URL `https://<your-app>/api/meetings-webhook`, Allowed return origins). The API key
+and webhook secret are shown once; **Rotate key** re-issues both together.
+
+```
+MEETINGS_API_URL=https://meetings.gateling.com
+MEETINGS_API_KEY=gm_live_…
+MEETINGS_WEBHOOK_SECRET=whsec_…
+```
+
+Add the three to your env validation (`src/env/server.ts`) as optional, and require all
+three together in production. `getMeetingsClient()` returns `null` when the pair is not
+set, so local and preview environments keep working without keys.
+
+## Usage
+
+### Create or reschedule (in a background job)
+
+Calls to Meetings are external HTTP — do them from your job queue (Inngest), never inline
+in a request. Store the returned `code` and `guestUrl` on your entity.
+
+```ts
+import {
+  ensureScheduledMeeting,
+  getMeetingsClient,
+} from "@/integrations/meetings"
+
+const client = getMeetingsClient()
+if (!client) return { skipped: "meetings not configured" }
+
+const { meeting, action } = await ensureScheduledMeeting(client, {
+  externalRef: `booking:${booking.id}`,
+  existingCode: booking.meetingCode, // null → create, set → PATCH the time
+  title: `Call with ${booking.name}`,
+  host: { externalId: "my-app", name: "My App" },
+  scheduledAt: booking.startsAt,
+  durationMinutes: 30,
+  timezone: "Africa/Cairo",
+  settings: { waitingRoom: true, allowGuests: true },
+})
+
+await db
+  .update(bookings)
+  .set({ meetingCode: meeting.code, meetingGuestUrl: meeting.guestUrl })
+  .where(eq(bookings.id, booking.id))
+```
+
+`ensureScheduledMeeting` sends `Idempotency-Key: <externalRef>:<scheduledAt>` on create, so
+a retried job cannot open two rooms. If `existingCode` no longer resolves (deleted or ended)
+it creates a fresh room instead of failing — always write the returned `code` back.
+
+### Cancel
+
+```ts
+import {
+  cancelScheduledMeeting,
+  getMeetingsClient,
+} from "@/integrations/meetings"
+
+const client = getMeetingsClient()
+if (client && booking.meetingCode)
+  await cancelScheduledMeeting(client, booking.meetingCode)
+```
+
+Returns `false` when the room was already gone — a retried cancellation is not an error.
+
+### Send the host in
+
+Host links are **single-use and expire in 10 minutes**: mint one per click in a server
+procedure and hand the URL to the browser. The `externalId` must be the one the meeting
+was created with.
+
+```ts
+// tRPC procedure — authorise first, then:
+const link = await mintHostJoinLink(client, booking.meetingCode, HOST, {
+  returnUrl: `${env.BASE_URL}/bookings`,
+})
+return { url: link.url }
+```
+
+```ts
+// client
+const { url } = await hostJoinLink.mutateAsync({ id })
+window.open(url, "_blank", "noopener")
+```
+
+Guests use `meeting.guestUrl` directly (waiting room and passcode apply). For a signed-in
+person who should skip the waiting room, use `mintParticipantJoinLink`.
+
+### Hear back
+
+`src/app/api/meetings-webhook/route.ts` verifies the `X-Meetings-Signature` header
+(HMAC-SHA256 over `<t>.<raw body>`, 5-minute replay window) and parses the delivery. Edit
+`onDelivery` to hand it to your queue:
+
+```ts
+export const POST = createMeetingsWebhookHandler({
+  secret: process.env.MEETINGS_WEBHOOK_SECRET,
+  onDelivery: async delivery => {
+    // `id` is stable across Meetings' 6 delivery attempts — Inngest dedupes on it.
+    await inngest.send({
+      name: "meetings/webhook.received",
+      id: delivery.id,
+      data: delivery,
+    })
+  },
+})
+```
+
+Events: `meeting.started`, `meeting.ended` (`endedBy: host | integration | room`),
+`participant.joined`, `participant.left`. Every payload carries `data.meeting.externalRef`
+so you can find your entity without a lookup table.
+
+## Versioning
+
+The client tracks the Meetings `/api/v1` contract; its `@version` header is bumped when the
+contract changes. Upgrade every consumer with:
+
+<CliCommandCode
+  action="run"
+  command="shadcn@latest add @gateling/meetings-integration --overwrite"
+/>
+
+`route.ts` is a starter you edit, so re-apply your `onDelivery` after an overwrite (or pass
+`--overwrite` only when the `lib/` files changed).
