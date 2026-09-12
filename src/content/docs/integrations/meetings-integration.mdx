@@ -153,6 +153,27 @@ Events: `meeting.started`, `meeting.ended` (`endedBy: host | integration | room`
 `participant.joined`, `participant.left`. Every payload carries `data.meeting.externalRef`
 so you can find your entity without a lookup table.
 
+## Tests
+
+The block ships its Vitest specs. `index.ts` is `server-only`, which throws when
+imported outside a React Server Component graph — alias it to an empty module in
+your `vitest.config`:
+
+```ts
+resolve: {
+  alias: { "server-only": fileURLToPath(new URL("./src/test/server-only-stub.ts", import.meta.url)) },
+},
+```
+
+with `src/test/server-only-stub.ts` containing just `export {}`.
+
+## Security notes
+
+- `MEETINGS_API_URL` must be `https://` (plain `http://` is accepted for `localhost` only); the key is never sent in clear.
+- The two response fields rendered as links — `meeting.guestUrl` and `joinLink.url` — are checked to be `https:` URLs at the boundary; anything else is a `MeetingsApiError(502, "invalid_response")`.
+- The webhook route rejects bodies over 64 KB before reading them, verifies on the raw body, and answers a bare 503 when no secret is configured.
+- Host links are privileged: log who minted one for what in your app (Meetings only sees the shared host identity).
+
 ## Versioning
 
 The client tracks the Meetings `/api/v1` contract; its `@version` header is bumped when the

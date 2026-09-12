@@ -111,6 +111,26 @@ export class MeetingsApiError extends Error {
   }
 }
 
+/**
+ * The only response fields this app turns into links (`guestUrl`, join
+ * `url`) are checked at the boundary: a mis-pointed or compromised Meetings
+ * host must not be able to put an arbitrary scheme into our emails and UI.
+ */
+function assertHttpsUrl(value: unknown, field: string): string {
+  if (typeof value === "string") {
+    try {
+      if (new URL(value).protocol === "https:") return value
+    } catch {
+      // fall through to the error below
+    }
+  }
+  throw new MeetingsApiError(
+    502,
+    "invalid_response",
+    `${field} is not an https URL`,
+  )
+}
+
 export function createMeetingsClient({
   baseUrl,
   apiKey,
@@ -163,6 +183,7 @@ export function createMeetingsClient({
         input,
         idempotencyKey ? { "idempotency-key": idempotencyKey } : {},
       )
+      assertHttpsUrl(meeting?.guestUrl, "meeting.guestUrl")
       return meeting
     },
 
@@ -171,6 +192,7 @@ export function createMeetingsClient({
         "GET",
         `/meetings/${encodeURIComponent(code)}`,
       )
+      assertHttpsUrl(meeting?.guestUrl, "meeting.guestUrl")
       return meeting
     },
 
@@ -199,6 +221,7 @@ export function createMeetingsClient({
         `/meetings/${encodeURIComponent(code)}`,
         input,
       )
+      assertHttpsUrl(meeting?.guestUrl, "meeting.guestUrl")
       return meeting
     },
 
@@ -227,6 +250,7 @@ export function createMeetingsClient({
         `/meetings/${encodeURIComponent(code)}/join-links`,
         input,
       )
+      assertHttpsUrl(joinLink?.url, "joinLink.url")
       return joinLink
     },
 
